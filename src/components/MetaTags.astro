@@ -1,0 +1,54 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  url?: string;
+  image?: string;
+  keywords?: string[];
+}
+
+const {
+  title = "rohid.dev",
+  description = "",
+  image,
+  url,
+  keywords,
+} = Astro.props;
+
+const BASE_URL = import.meta.env.PUBLIC_BASE_URL;
+
+let finalUrl = url;
+if (!finalUrl) {
+  finalUrl = new URL(Astro.request.url, BASE_URL).href;
+}
+
+let finalImage = image;
+if (!finalImage) {
+  const ogImage = new URL(BASE_URL + "/api/og.png");
+  ogImage.searchParams.set("title", title);
+  finalImage = ogImage.href;
+}
+---
+
+<Fragment slot="head">
+  <title>{title}</title>
+
+  <meta name="description" content={description} />
+  {keywords && <meta name="keywords" content={keywords.join(", ")} />}
+  <meta name="author" content="Rohid" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@rohiddev" />
+  <meta name="twitter:creator" content="@rohiddev" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={finalImage} />
+
+  <!-- OG -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={finalUrl} />
+  <meta property="og:image" content={finalImage} />
+</Fragment>
